@@ -3,9 +3,7 @@ package co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.impl;
 import co.uk.e2b.identitye2e.assessment.librarymanagement.dto.Book;
 import co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.FindBy;
 import java.util.List;
-import org.springframework.stereotype.Component;
 
-@Component
 public class FindByISBN implements FindBy<Book> {
 
   @Override
