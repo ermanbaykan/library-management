@@ -1,9 +1,9 @@
-package co.uk.e2b.identitye2e.assessment.librarymanagement.service.impl;
+package co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import co.uk.e2b.identitye2e.assessment.librarymanagement.dto.Book;
-import co.uk.e2b.identitye2e.assessment.librarymanagement.service.FindBy;
+import co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.FindBy;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

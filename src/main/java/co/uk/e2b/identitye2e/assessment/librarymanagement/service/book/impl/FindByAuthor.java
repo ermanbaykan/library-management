@@ -1,7 +1,7 @@
-package co.uk.e2b.identitye2e.assessment.librarymanagement.service.impl;
+package co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.impl;
 
 import co.uk.e2b.identitye2e.assessment.librarymanagement.dto.Book;
-import co.uk.e2b.identitye2e.assessment.librarymanagement.service.FindListBy;
+import co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.FindListBy;
 import java.util.List;
 import org.springframework.stereotype.Component;
 

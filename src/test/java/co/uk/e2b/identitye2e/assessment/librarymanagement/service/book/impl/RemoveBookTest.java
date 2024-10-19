@@ -1,4 +1,4 @@
-package co.uk.e2b.identitye2e.assessment.librarymanagement.service.impl;
+package co.uk.e2b.identitye2e.assessment.librarymanagement.service.book.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
