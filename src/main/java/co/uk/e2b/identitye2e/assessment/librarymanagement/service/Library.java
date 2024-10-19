@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.springframework.stereotype.Service;
 
+@Service
 public class Library {
 
   final private AddItem<Book> addBook;
