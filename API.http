@@ -1,0 +1,32 @@
+###
+POST http://localhost:8080/book
+Content-Type: application/json
+
+{
+ "isbn": "3",
+ "author": "a3",
+ "title": "a-a",
+ "publicationYear": 2022,
+  "availableCopies": 3
+}
+
+###
+GET http://localhost:8080/book?isbn=3
+Accept: application/json
+
+###
+GET http://localhost:8080/book?author=a3
+Accept: application/json
+
+###
+DELETE localhost:8080/book/3
+
+###
+PATCH http://localhost:8080/book/return/3
+Content-Type: application/json
+
+###
+PATCH http://localhost:8080/book/borrow/25
+Content-Type: application/json
+
+
