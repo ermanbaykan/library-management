@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ConcurrentLruCache;
 
 @Service
 public class Library {
@@ -25,6 +26,8 @@ public class Library {
   final private FindBy<Book> findByISBN;
   final private RemoveItem<Book> removeBook;
   final private FindListBy<Book> findByAuthor;
+  final private ConcurrentLruCache<String, Book> cacheByIsbn;
+  final private ConcurrentLruCache<String, List<Book>> cacheByAuthor;
   List<Book> books;
 
   public Library() {
@@ -33,6 +36,21 @@ public class Library {
     this.findByISBN = new FindByISBN();
     this.removeBook = new RemoveBook();
     this.findByAuthor = new FindByAuthor();
+    this.cacheByIsbn = new ConcurrentLruCache<>(3, (isbn) -> {
+      var found = findByISBN.find(books, isbn);
+
+      if (found == null) {
+        throw new BookNotFound("Book not found with ISBN: " + isbn);
+      }
+      return found;
+    });
+    this.cacheByAuthor = new ConcurrentLruCache<>(3, (author) -> {
+      var found = findByAuthor.find(books, author);
+      if (found == null) {
+        throw new BookNotFound("Book not found with Author: " + author);
+      }
+      return found;
+    });
   }
   public ResultType addBook(Book book) {
     var found = findByISBN.find(books, book.getIsbn());
@@ -41,31 +59,29 @@ public class Library {
     }
     var newBook = Book.builder().isbn(book.getIsbn()).author(book.getAuthor())
         .title(book.getTitle()).publicationYear(book.getPublicationYear())
-        .availableCopies(new AtomicInteger(1)).build();
+        .availableCopies(
+            (book.getAvailableCopies() != null && book.getAvailableCopies().intValue() != 0)
+                ? book.getAvailableCopies() : new AtomicInteger(1))
+        .build();
     books = addBook.add(books, newBook);
+    cacheByAuthor.remove(book.getAuthor());
     return ResultType.ADDED;
   }
 
   public ResultType removeBook(String isbn) {
     var found = findBookByISBN(isbn);
     books = removeBook.remove(books, found);
+    cacheByAuthor.remove(found.getAuthor());
+    cacheByIsbn.remove(isbn);
     return ResultType.REMOVED;
   }
 
   public Book findBookByISBN(String isbn) {
-    var found = findByISBN.find(books, isbn);
-    if (found == null) {
-      throw new BookNotFound("Book not found with ISBN: " + isbn);
-    }
-    return found;
+    return cacheByIsbn.get(isbn);
   }
 
   public List<Book> findBooksByAuthor(String author) {
-    var found = findByAuthor.find(books, author);
-    if (found == null) {
-      throw new BookNotFound("Book not found with Author: " + author);
-    }
-    return found;
+    return cacheByAuthor.get(author);
   }
 
   public ResultType borrowBook(String isbn) {
@@ -73,7 +89,7 @@ public class Library {
     if (found == null) {
       throw new BookNotFound("Book not found with ISBN: " + isbn);
     }
-    if(found.getAvailableCopies().intValue() == 0) {
+    if (found.getAvailableCopies().intValue() == 0) {
       return ResultType.NO_AVAILABLE_BOOK;
     }
     found.getAvailableCopies().set(found.getAvailableCopies().decrementAndGet());
